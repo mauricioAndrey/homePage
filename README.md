@@ -1,5 +1,5 @@
 <h3 align="left"> Para clonar o repositório: </h3>
-   <a href="git@github.com:mayres-2/homePage.git"> git clone </a>
+   <p> git clone <a href = "git@github.com:mayres-2/homePage.git"> git@github.com:mayres-2/homePage.git </a> </p> 
 
 <h3 align="left"> Comandos:</h3>
   <p> git add . </p>
