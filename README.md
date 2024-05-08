@@ -3,7 +3,7 @@
 <html>
    <body>
       <h3 align="left"> Para clonar o repositório: </h3>
-         <p> git clone < git@github.com:mayres-2/homePage.git </p>
+         <p> git clone git@github.com:mayres-2/homePage.git </p>
       <h3 align="left"> Comandos:</h3>
          <p> git add . </p>
          <p> git commit -m "comentario" </p>
