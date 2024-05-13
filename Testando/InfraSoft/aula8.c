@@ -233,10 +233,11 @@ void *codigo_thread(void *threadid) {
 //exercício
 //um produtor e três consumidores
 //no lugar de signal, usa um broadcast
-//mudar isso
+//mudar isso//mudei
 //*
 #define BUFFER_SIZE 10
 #define NUM_ITEMS 100
+#define THREADS 3
 
 int buff[BUFFER_SIZE];  // buffer size = 10; 
 int items = 0; // number of items in the buffer.
@@ -244,68 +245,78 @@ int first = 0;
 int last = 0; 
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-//variavel para produtor
+//variavel para produtor 
 pthread_cond_t empty = PTHREAD_COND_INITIALIZER;
-//variavel para consumidor
+//variavel para consumidor 
 pthread_cond_t fill = PTHREAD_COND_INITIALIZER;
- 
+
 void *producer();
-void *consumer();
+void *consumer(void *arg);
 
 int main() {
-    pthread_t consumer_thread; 
+
+    pthread_t consumer_thread[THREADS];
     pthread_t producer_thread; 
-    pthread_create(&consumer_thread,NULL,consumer,NULL);
+    int *ids[THREADS]; 
+    
+    for(int i=0; i<THREADS; i++){
+        ids[i] = (int *) malloc(sizeof(int));
+        *ids[i] = i;
+        pthread_create(&consumer_thread[i],NULL,consumer,(void*)ids[i]);
+    }
     pthread_create(&producer_thread,NULL,producer,NULL);
-    pthread_join(producer_thread,NULL);  
-    pthread_join(consumer_thread,NULL);
+    
+    pthread_exit(NULL);
+
+    return 0;
 }
 
 void put(int i){
-  pthread_mutex_lock(&mutex);
-  while(items == BUFFER_SIZE) {
-    pthread_cond_wait(&empty, &mutex);
-  }
-  buff[last] = i;
-  printf("pos %d: ", last);
-  items++; last++;
-  if(last==BUFFER_SIZE) { last = 0; } 
-  if(items == 1) { 
-    pthread_cond_signal(&fill); }
-  pthread_mutex_unlock(&mutex); 
+    pthread_mutex_lock(&mutex);
+    while(items == BUFFER_SIZE) {
+        pthread_cond_wait(&empty, &mutex);
+    }
+    buff[last] = i;
+    printf("pos %d: ", last);
+    items++; last++;
+    if(last==BUFFER_SIZE) { last = 0; } 
+    if(items == 1) { pthread_cond_broadcast(&fill); }
+    pthread_mutex_unlock(&mutex); 
 }
 void *producer() {
     int i = 0;
     printf("Produtor\n");
-    for(i=0;i<NUM_ITEMS; i++) {
+    int amount = NUM_ITEMS * THREADS;
+    printf("Produtor iniciou\n");
+    for(i=0;i<amount; i++) {
         put(i);
         printf("Produzi %d \n",i);
     }
+    printf("Produtor terminou\n");
     pthread_exit(NULL);
 }
 
 int get(){
     int result;
     pthread_mutex_lock(&mutex);
-    while(items == 0){
-        pthread_cond_wait(&fill, &mutex);
-    }
+    while(items == 0){ pthread_cond_wait(&fill, &mutex); }
     result = buff[first];
     printf("pos %d: ", first);
     items--; first++;
     if(first==BUFFER_SIZE) { first = 0; }
-    if(items == BUFFER_SIZE - 1){
-        pthread_cond_signal(&empty);}
+    if(items == BUFFER_SIZE - 1){ pthread_cond_signal(&empty); }
     pthread_mutex_unlock(&mutex);
     return result;
 }
-void *consumer() {
+void *consumer(void *arg) {
     int i,v;
-    printf("Consumidor\n");
+    int *id = ((int*) arg);
+    printf("Consumidor %d iniciou\n", *id);
     for (i=0;i<NUM_ITEMS;i++) {
         v = get();
-        printf("Consumi %d  \n",v);
+        printf("Consumidor %d consumiu %d  \n", *id, v);
     }
+    printf("Consumidor %d terminou\n", *id);
     pthread_exit(NULL);
 }
 
