@@ -16,7 +16,7 @@ struct threadThings{
     struct matriz *mat;
     pthread_t thread;
     int *NUM_THREADS;
-    int *id;
+    int id;
     int linha, coluna;
 };
 
@@ -37,10 +37,8 @@ int main(int argc, char *argv[]){
     
     FILE *arq = fopen("arqTeste.txt", "r");
     if(arq == NULL) { return 1; }
-    char buffer;
 
     fscanf(arq, "%d %d", &mat.LINHAS, &mat.COLUNAS);
-    fgets(&buffer, sizeof(char), arq);
     ///
     mat.mat1 = (int **) malloc (sizeof(int*));
     mat.res = (int **) malloc(sizeof(int*));
@@ -48,17 +46,17 @@ int main(int argc, char *argv[]){
         mat.mat1[i] = (int *) malloc(sizeof(int));
         mat.res[i] = (int*) malloc(sizeof(int));
         for(int j=0; j<mat.COLUNAS; j++){
-            fscanf(arq, "%d", &mat.mat1[i][j]);
-            fgets(&buffer, sizeof(char), arq);
-        }
+            fscanf(arq, " %d", &mat.mat1[i][j]);
+            printf("AAA\n");
+        } //%*c
     }
     //
     mat.mat2 = (int **) malloc (sizeof(int*));
     for(int i=0; i<mat.LINHAS; i++){
         mat.mat2[i] = (int *) malloc(sizeof(int));
         for(int j=0; j<mat.COLUNAS; j++){
-            fscanf(arq, "%d", &mat.mat2[i][j]);
-            fgets(&buffer, sizeof(char), arq);
+            fscanf(arq, " %d", &mat.mat2[i][j]);
+            printf("bbb\n");
         }
     }
     ///
@@ -69,8 +67,8 @@ int main(int argc, char *argv[]){
     int t=0,i=0,j=0;
     for(t=0;t<NUM_THREADS; t++){
         threads[t] = (struct threadThings*) malloc(sizeof(struct threadThings));
-        (*threads)[t].mat = &mat;
-        (*threads)[t].id = &t;
+        (*threads)[t].mat = &mat; 
+        (*threads)[t].id = t; 
         (*threads)[t].NUM_THREADS = &NUM_THREADS;
         (*threads)[t].linha = i;
         if(i==mat.LINHAS) i=0;
@@ -82,7 +80,7 @@ int main(int argc, char *argv[]){
         pthread_create(&threads[t]->thread, NULL, celulaThread, (void *) threads[t]);
     }
     for(t=0;t<NUM_THREADS; t++){
-        //int *res;
+        //int *res; 
         pthread_join((*threads)[t].thread, NULL);
     }
     for(i=0; i<mat.LINHAS; i++){
@@ -91,4 +89,5 @@ int main(int argc, char *argv[]){
         printf("\n");
     }
     pthread_exit(NULL);
+    fclose(arq);
 }
