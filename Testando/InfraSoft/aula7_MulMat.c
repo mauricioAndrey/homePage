@@ -60,8 +60,7 @@ int main(int argc, char *argv[]){
     }
     ///
     int NUM_THREADS = mat.LINHAS * mat.COLUNAS;
-    struct threadThings *threads = (struct threadThings *) 
-        malloc(sizeof(struct threadThings)*NUM_THREADS);
+    struct threadThings *threads = (struct threadThings *) malloc(sizeof(struct threadThings)*NUM_THREADS);
 
     int t=0;
     for(int i=0; i<mat.LINHAS; i++)
