@@ -61,11 +61,9 @@ int main(int argc, char* argv[]){
         thread[t].vetor = &vetor; 
         thread[t].id = t; 
         //colocando as partes do array em cada thread
-        for(;cont<quant && cont-1<vetor.tam; cont++){
-            thread[t].begin = cont; 
-            cont++; 
-            thread[t].end = cont; 
-        }
+        thread[t].begin = cont;
+        cont += quant;
+        thread[t].end = cont;
         pthread_create(&thread[t].thread, NULL, funcaoThread, (void*) &thread[t]);
     }
     for(int t=0; t<N; t++){
