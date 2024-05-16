@@ -4,78 +4,91 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+/*
+Nthreads é o N, a quantidade de threads e a quantidade que vai particionar o array. 
+*/
+
 pthread_barrier_t barreira;
 
-#define N 3
-
-struct array{
-    int *arr;
+struct ArrayInfo{
+    int *array;
+    int *ordenado;
     int tam;
 };
 struct threadThings{
-    struct array *vetor;
-    pthread_t thread;
-    int id;
+    struct ArrayInfo *vetorInfo;
+    int *nThreads;
+    int threadId;
     int begin;
     int end;
 };
 
 void *funcaoThread(void *arg){
     struct threadThings info = (*(struct threadThings *) arg);
-    int i=info.begin, j=info.end;
-    for(int k=i; k<j && k+1<info.vetor->tam; k++){
-        for(int m=k+1; m<j; m++)
-            if(info.vetor->arr[m] < info.vetor->arr[m+1]){ 
-                int temp = info.vetor->arr[m];
-                info.vetor->arr[m] = info.vetor->arr[m+1];
-                info.vetor->arr[m+1] = temp;
+    for(int k=info.begin; k<=info.end && k+1<info.vetorInfo->tam; k++){
+        for(int m=k+1; m<=info.end; m++){
+            if(info.vetorInfo->array[m] > info.vetorInfo->array[m+1]){ 
+                printf("Thread %d trocou\n", info.threadId);
+                info.vetorInfo->ordenado[m] = info.vetorInfo->array[m+1];
+                info.vetorInfo->ordenado[m+1] = info.vetorInfo->array[m];
             }
-        pthread_barrier_wait(&barreira);
+        }
     }
+    pthread_barrier_wait(&barreira);
     
     pthread_exit(NULL);
 }
 
 int main(int argc, char* argv[]){
     //struct para as informações do array
-    struct array vetor;
+    struct ArrayInfo vetorCoisas;
+    int Nthreads;
 
-    scanf("%d", &vetor.tam);
-    vetor.arr = (int*) malloc(sizeof(int)*vetor.tam);
-    for(int i=0; i<vetor.tam; i++){
-        scanf("%d", &vetor.arr[i]);
+    //únicas entradas do código
+    printf("Qual o tamanho do array e a quantidade de particoes?\n");
+    scanf("%d %d", &vetorCoisas.tam, &Nthreads);
+    printf("Quais os elementos do array?\n");
+    vetorCoisas.array = (int*) malloc(sizeof(int)*vetorCoisas.tam);
+    vetorCoisas.ordenado = (int*)malloc(sizeof(int)*vetorCoisas.tam); 
+    for(int i=0; i<vetorCoisas.tam; i++){
+        scanf("%d", &vetorCoisas.array[i]);
     }
+    //a quantidade de threads deve ser menor que a quantidade de elementos do array
+    if(vetorCoisas.tam < Nthreads) return 1;
 
-    pthread_barrier_init(&barreira, NULL, vetor.tam);
+    //barreira iniciada
+    pthread_barrier_init(&barreira, NULL, Nthreads);
 
     //struct que vai ser mandada para cada thread
-    struct threadThings *thread = (struct threadThings*) malloc(sizeof(struct threadThings)*N);
+    struct threadThings *thread = (struct threadThings*) malloc(sizeof(struct threadThings)*Nthreads);
+    pthread_t threadVar[Nthreads];
 
     //variavel para indicar os indices do array
     int cont=0;
     //quantidade de elementos do array colocado em cada thread
-    int quant = vetor.tam / N;
+    int quant = vetorCoisas.tam / Nthreads;
 
-    for(int t=0; t<N; t++){
+    for(int t=0; t<Nthreads; t++){
         //todas as threads apontam para a posição em que as informações do array está
-        thread[t].vetor = &vetor; 
-        thread[t].id = t; 
-        //colocando as partes do array em cada thread
+        thread[t].vetorInfo = &vetorCoisas; 
+        thread[t].threadId = t; 
+        //colocando as partes do array em cada thread 
         thread[t].begin = cont;
         cont += quant;
         thread[t].end = cont;
-        pthread_create(&thread[t].thread, NULL, funcaoThread, (void*) &thread[t]);
+        pthread_create(&threadVar[t], NULL, funcaoThread, (void*) &thread[t]);
     }
-    for(int t=0; t<N; t++){
-        pthread_join(thread[t].thread, NULL);
+    for(int t=0; t<Nthreads; t++){
+        pthread_join(threadVar[t], NULL);
     }
+    //barreira finalizada
     pthread_barrier_destroy(&barreira);
 
-    //thread que junta tudo
+    //thread que junta tudo 
 
-    //array ordenado
-    for(int i=0; i<N; i++){
-        printf("%d ", vetor.arr[i]); 
+    //array ordenado 
+    for(int i=0; i<vetorCoisas.tam; i++){
+        printf("%d ", vetorCoisas.ordenado[i]); 
     }
     printf("\n");
 
