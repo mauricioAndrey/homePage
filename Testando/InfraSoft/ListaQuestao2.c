@@ -3,21 +3,23 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 
 /*
-Nthreads é o N, a quantidade de threads e a quantidade que vai particionar o array. 
+Nthreads é o N, a quantidade de threads e a quantidade que vai particionar o array.
 */
 
 pthread_barrier_t barreira;
 
 struct ArrayInfo{
     int *array;
-    int *ordenado;
     int tam;
 };
 struct threadThings{
     struct ArrayInfo *vetorInfo;
+    int *Subarray;
     int *nThreads;
+    int tamSub;
     int threadId;
     int begin;
     int end;
@@ -25,21 +27,53 @@ struct threadThings{
 
 void *funcaoThread(void *arg){
     struct threadThings info = (*(struct threadThings *) arg);
-    for(int k=info.begin; k<=info.end && k+1<info.vetorInfo->tam; k++){
-        for(int m=k+1; m<=info.end; m++){
-            if(info.vetorInfo->array[m] > info.vetorInfo->array[m+1]){ 
+    for(int i=info.begin; i<info.end; i++){
+        for(int j=i; j<info.end-1; j++){
+            if(info.Subarray[j] > info.Subarray[j+1]){
                 printf("Thread %d trocou\n", info.threadId);
-                info.vetorInfo->ordenado[m] = info.vetorInfo->array[m+1];
-                info.vetorInfo->ordenado[m+1] = info.vetorInfo->array[m];
+                int temp = info.Subarray[j];
+                info.Subarray[j] = info.Subarray[j+1];
+                info.Subarray[j+1] = temp;
             }
         }
     }
     pthread_barrier_wait(&barreira);
-    
     pthread_exit(NULL);
 }
 
-int main(int argc, char* argv[]){
+void *sortThread(void *arg){
+    //todas as threads e seus subarrays
+    struct threadThings *info = (struct threadThings*) arg;
+    //comparar qual o menor valor em determinada posição de cada subArray
+    //colocá-los no "novo" array de maneira crescente
+    //fazer isso com cada posicão
+
+    int k=1;
+    int ultimo=__INT_MAX__;
+    for(int j=0; j<info[0].tamSub && k<info[0].vetorInfo->tam; j++){
+        for(int i=0; i<info[0].nThreads[0]; i++){
+            int subI=info[i].begin+j;
+            //int subF=info[i].end;
+            //o ultimo adicionado eh maior do que o atual //trocam de pos
+            if(ultimo > info[i].Subarray[subI]){
+                //a pos anterior recebe o atual
+                info[i].vetorInfo->array[k-1] = info[i].Subarray[subI];
+                //a pos atual recebe o ultimo
+                info[i].vetorInfo->array[k] = ultimo;
+                //o atual vira o novo ultimo
+                ultimo = info[i].Subarray[subI];
+                k++;
+            }
+            //o ultimo nao é maior ent só adiciona o valor atual na pos atual
+            else {
+                info[i].vetorInfo->array[k] = info[i].Subarray[subI];
+                k++;
+            }
+        }
+    }
+}
+
+int main(){
     //struct para as informações do array
     struct ArrayInfo vetorCoisas;
     int Nthreads;
@@ -49,7 +83,6 @@ int main(int argc, char* argv[]){
     scanf("%d %d", &vetorCoisas.tam, &Nthreads);
     printf("Quais os elementos do array?\n");
     vetorCoisas.array = (int*) malloc(sizeof(int)*vetorCoisas.tam);
-    vetorCoisas.ordenado = (int*)malloc(sizeof(int)*vetorCoisas.tam); 
     for(int i=0; i<vetorCoisas.tam; i++){
         scanf("%d", &vetorCoisas.array[i]);
     }
@@ -70,9 +103,12 @@ int main(int argc, char* argv[]){
 
     for(int t=0; t<Nthreads; t++){
         //todas as threads apontam para a posição em que as informações do array está
-        thread[t].vetorInfo = &vetorCoisas; 
-        thread[t].threadId = t; 
-        //colocando as partes do array em cada thread 
+        thread[t].Subarray = (int*)calloc(0,sizeof(int)*vetorCoisas.tam);
+        thread[t].vetorInfo = &vetorCoisas;
+        thread[t].Subarray = vetorCoisas.array;
+        thread[t].threadId = t;
+        thread[t].tamSub = quant;
+        //colocando as partes do array em cada thread
         thread[t].begin = cont;
         cont += quant;
         thread[t].end = cont;
@@ -84,15 +120,20 @@ int main(int argc, char* argv[]){
     //barreira finalizada
     pthread_barrier_destroy(&barreira);
 
-    //thread que junta tudo 
+    //thread que junta tudo
+    pthread_t threadSort;
+    pthread_create(&threadSort, NULL, sortThread, (void*) &thread);
+    pthread_join(threadSort, NULL);
 
-    //array ordenado 
+    //array ordenado
     for(int i=0; i<vetorCoisas.tam; i++){
-        printf("%d ", vetorCoisas.ordenado[i]); 
+        printf("%d ", vetorCoisas.array[i]);
     }
     printf("\n");
 
-    pthread_exit(NULL);
+    free(vetorCoisas.array);
+    for(int i=0; i<Nthreads; i++)
+        free(thread[i].Subarray);
     free(thread);
-
+    pthread_exit(NULL);
 }
