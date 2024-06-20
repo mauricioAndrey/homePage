@@ -5,7 +5,7 @@
       <h4 align="left"> :construction: Projeto está uma zona :construction: </h4>
       <h5 align="left"> :transgender_flag: This is from a colourful person :transgender_flag: <h5>
       <h3 align="left"> Para clonar o repositório: </h3>
-         <p> git clone git@github.com:mayres-2/homePage.git </p>
+         <p> git clone link </p>
       <h3 align="left"> Comandos:</h3>
          <p> git add . </p>
          <p> git commit -m "comentario" </p>
