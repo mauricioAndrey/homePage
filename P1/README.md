@@ -1,7 +1,7 @@
 
 #### Objetivos:
-   - [ x ] Programar em C
-   - [ x ] Mexer no Arduino
+   - [x] Programar em C
+   - [x] Mexer no Arduino
    
 
 <details>
