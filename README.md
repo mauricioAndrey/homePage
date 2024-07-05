@@ -10,9 +10,9 @@
    - Para clonar o repositório: 
       - `git clone --branch <nome-branch> <link-do-repositorio>` 
    - Comandos
-      - `git add .`, 
-      - `git commit -m "comentario"`, 
-      - `git push origin <nome-branch> `,
+      - `git add .`
+      - `git commit -m "comentario"`
+      - `git push origin <nome-branch>`
       - `git pull origin <nome-branch> `
    - Links
       - <a href="https://www.treinaweb.com.br/blog/comandos-do-git-que-voce-precisa-conhecer-parte-1"> Comandos Git para o Terminal</a>

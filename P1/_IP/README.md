@@ -1,4 +1,4 @@
-# Linguagem-C
+#### Linguagem-C
  Aprendendo tudo o possível sobre a linguagem C
 
   1. Condições
@@ -9,4 +9,7 @@
   6. Ponteiros 
   7. Funções 
   8. Arquivos 
+
+- PS.
+  - Biblioteca raylib 
 
