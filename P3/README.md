@@ -1,7 +1,7 @@
 
 #### Objetivos:
    - [x] Programar Sistemas Operacionais em C
-   - [x] Aprender SystemVerilog
+   - [ ] Aprender SystemVerilog
    
 
 <details>
