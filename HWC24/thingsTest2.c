@@ -1,2 +1,0 @@
-//Hi gay
-//surprise
