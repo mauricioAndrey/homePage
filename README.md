@@ -1,16 +1,41 @@
-<!DOCFILE html>
+<h4 align="left"> :construction: Projeto está uma zona :construction: </h4>
+<h5 align="left"> :transgender_flag: This is from a colourful person :transgender_flag: <h5>
 
-<html>
-   <body>
-      <h4 align="left"> :construction: Projeto está uma zona :construction: </h4>
-      <h5 align="left"> :transgender_flag: This is from a colourful person :transgender_flag: <h5>
-      <h3 align="left"> Para clonar o repositório: </h3>
-         <p> git clone link </p>
-      <h3 align="left"> Comandos:</h3>
-         <p> git add . </p>
-         <p> git commit -m "comentario" </p>
-         <p> git push origin branch </p>
-      <h3 align="left"> Links:</h3>
-         <a href="https://www.treinaweb.com.br/blog/comandos-do-git-que-voce-precisa-conhecer-parte-1"> Comandos Git para o Terminal</a>
-   </body>
-</html>
+#### Objetivos:
+   - [ ] Sobreviver
+
+<details>
+<summary>Detalhes do git</summary>
+   
+   - Para clonar o repositório: 
+      - `git clone --branch <nome-branch> <link-do-repositorio>` 
+   - Comandos
+      - `git add .`, 
+      - `git commit -m "comentario"`, 
+      - `git push origin <nome-branch> `,
+      - `git pull origin <nome-branch> `
+   - Links
+      - <a href="https://www.treinaweb.com.br/blog/comandos-do-git-que-voce-precisa-conhecer-parte-1"> Comandos Git para o Terminal</a>
+</details>
+
+<details>
+
+<summary>Tempo</summary>
+   
+   - O quanto já passou:
+   
+   | Periodo | Estado |
+   |:-----------:|:-----------:|
+   |      `1`      |      ✅      |
+   |      `2`      |      ✅      |
+   |      `3`      |      🪦      |
+   |      `4`      |      ❌      |
+   |      `5`      |      ❌      |
+   |      `6`      |      ❌      |
+   |      `7`      |      ❌      |
+   |      `8`      |      ❌      |
+   |      `9`      |      ❌      |
+   |      `10`      |      ❌      |
+
+
+</details>
